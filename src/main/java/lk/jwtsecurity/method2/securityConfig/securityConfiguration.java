@@ -1,5 +1,7 @@
 package lk.jwtsecurity.method2.securityConfig;
 
+import lk.jwtsecurity.method2.services.userDetailsServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -15,10 +17,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @EnableWebSecurity
 public class securityConfiguration extends WebSecurityConfigurerAdapter {
 
+    @Autowired
+    private userDetailsServiceImpl userDetailsServiceImpl;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        super.configure(auth);
+        auth
+                .userDetailsService(userDetailsServiceImpl)
+                .passwordEncoder(passwordEncoder());
     }
 
     @Override
