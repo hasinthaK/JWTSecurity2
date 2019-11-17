@@ -1,14 +1,20 @@
 package lk.jwtsecurity.method2.controllers;
 
+import lk.jwtsecurity.method2.jwtConfig.jwtUtility;
+import lk.jwtsecurity.method2.models.jwtResponse;
 import lk.jwtsecurity.method2.models.loginUser;
 import lk.jwtsecurity.method2.models.user;
+import lk.jwtsecurity.method2.models.userDetailsImpl;
 import lk.jwtsecurity.method2.repositories.userRepository;
+import lk.jwtsecurity.method2.services.userDetailsServiceImpl;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,13 +28,17 @@ public class userController {
     private static final Logger log = LoggerFactory.getLogger(userController.class);
 
     @Autowired
-    AuthenticationManager authManager;
+    private AuthenticationManager authManager;
 
     @Autowired
-    BCryptPasswordEncoder passwordEncoder;
+    private BCryptPasswordEncoder passwordEncoder;
 
     @Autowired
     private userRepository userRepo;
+
+    @Autowired
+    private jwtUtility jwtUtility;
+
 
     @RequestMapping(value = "/getusers", method = RequestMethod.GET)
     public List<user> getUsers(){
@@ -48,8 +58,20 @@ public class userController {
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ResponseEntity<?> createToken(@RequestBody loginUser user){
+    public ResponseEntity<?> createToken(@RequestBody loginUser user) throws Exception{
+        try{
+            authManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
+            );
+        }
+        catch (BadCredentialsException e){
+            throw new Exception("Incorrect credentials", e);
+        }
+        final user userDetails = userRepo.finduserByUsername(user.getUsername());
+        final userDetailsImpl userDetailsImpl = new userDetailsImpl(userDetails);
 
+        final String jwt = jwtUtility.generateToken(userDetailsImpl);
+        return ResponseEntity.ok(new jwtResponse(jwt));
     }
 
 }
