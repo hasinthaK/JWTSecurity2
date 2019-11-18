@@ -65,12 +65,14 @@ public class userController {
             );
         }
         catch (BadCredentialsException e){
+            log.info("Incorrect credentials");
             throw new Exception("Incorrect credentials", e);
         }
         final user userDetails = userRepo.finduserByUsername(user.getUsername());
         final userDetailsImpl userDetailsImpl = new userDetailsImpl(userDetails);
 
         final String jwt = jwtUtility.generateToken(userDetailsImpl);
+        log.info("Token created & returned");
         return ResponseEntity.ok(new jwtResponse(jwt));
     }
 
