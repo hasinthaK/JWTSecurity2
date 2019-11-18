@@ -68,7 +68,7 @@ public class userController {
             log.info("Incorrect credentials");
             throw new Exception("Incorrect credentials", e);
         }
-        final user userDetails = userRepo.finduserByUsername(user.getUsername());
+        final user userDetails = userRepo.findUserByUsername(user.getUsername());
         final userDetailsImpl userDetailsImpl = new userDetailsImpl(userDetails);
 
         final String jwt = jwtUtility.generateToken(userDetailsImpl);
