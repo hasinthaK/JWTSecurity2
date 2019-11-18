@@ -58,7 +58,7 @@ public class userController {
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ResponseEntity<?> createToken(@RequestBody loginUser user) throws Exception{
+    public jwtResponse createToken(@RequestBody loginUser user) throws Exception{
         try{
             authManager.authenticate(
                     new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
@@ -73,7 +73,7 @@ public class userController {
 
         final String jwt = jwtUtility.generateToken(userDetailsImpl);
         log.info("Token created & returned");
-        return ResponseEntity.ok(new jwtResponse(jwt));
+        return new jwtResponse(jwt);
     }
 
 }
