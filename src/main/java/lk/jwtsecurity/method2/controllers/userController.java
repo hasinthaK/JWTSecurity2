@@ -1,5 +1,6 @@
 package lk.jwtsecurity.method2.controllers;
 
+import lk.jwtsecurity.method2.jwtConfig.jwtProperties;
 import lk.jwtsecurity.method2.jwtConfig.jwtUtility;
 import lk.jwtsecurity.method2.models.jwtResponse;
 import lk.jwtsecurity.method2.models.loginUser;
@@ -71,9 +72,9 @@ public class userController {
         final user userDetails = userRepo.findUserByUsername(user.getUsername());
         final userDetailsImpl userDetailsImpl = new userDetailsImpl(userDetails);
 
-        final String jwt = jwtUtility.generateToken(userDetailsImpl);
+        final String jwt = jwtProperties.TOKEN_PREFIX + jwtUtility.generateToken(userDetailsImpl);
         log.info("Token created & returned");
-        return new jwtResponse(jwt);
+        return new jwtResponse(jwt, userDetails.getfName());
     }
 
 }
